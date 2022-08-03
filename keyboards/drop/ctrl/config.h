@@ -86,4 +86,6 @@
 /* Avoid out-of-bounds errors when SmartEEPROM is not enabled */
 #define EEPROM_SIZE 1024
 
+#define DYNAMIC_KEYMAP_EEPROM_ADDR (EECONFIG_SIZE+100)
+
 // #define DEBUG_MATRIX_SCAN_RATE
