@@ -22,7 +22,16 @@ def _build_info(keyboard, keymap):
     deep_update(info_json, km_info_json)
 
     # TODO: Munge to XAP requirements
-    del info_json['config_h_features']
+    info_json.pop('config_h_features', None)
+    info_json.pop('keymaps', None)
+    info_json.pop('parse_errors', None)
+    info_json.pop('parse_warnings', None)
+    info_json.get('usb', {}).pop('device_ver', None)
+    for layout in info_json.get('layouts', {}).values():
+        layout.pop('filename', None)
+        layout.pop('c_macro', None)
+        for item in layout.get('layout', []):
+            item.pop('label', None)
 
     return info_json
 
