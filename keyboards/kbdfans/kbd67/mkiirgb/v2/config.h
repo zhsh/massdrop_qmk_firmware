@@ -1,5 +1,4 @@
 #pragma once
-#include "config_common.h"
 
 #define MATRIX_ROWS 5
 #define MATRIX_COLS 15
@@ -12,7 +11,7 @@
 #define DEBOUNCE 3
 #define RGB_DISABLE_WHEN_USB_SUSPENDED // turn off effects when suspended
 #define RGB_MATRIX_KEYPRESSES
-#define RGB_MATRIX_STARTUP_MODE RGB_MATRIX_CYCLE_ALL
+#define RGB_MATRIX_DEFAULT_MODE RGB_MATRIX_CYCLE_ALL
 // RGB Matrix Animation modes. Explicitly enabled
 // For full list of effects, see:
 // https://docs.qmk.fm/#/feature_rgb_matrix?id=rgb-matrix-effects

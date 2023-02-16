@@ -16,7 +16,6 @@
 
 #pragma once
 
-#include "config_common.h"
 
 /* key matrix size */
 #define MATRIX_ROWS 7
@@ -38,11 +37,6 @@
 // #define LED_CAPS_LOCK_PIN B2
 // #define LED_PIN_ON_STATE 0
 
-// /* Backlight Setup */
-// #define BACKLIGHT_PIN B5
-// #define BACKLIGHT_LEVELS 6
-// //#define BACKLIGHT_BREATHING
-
 /* COL2ROW or ROW2COL */
 #define DIODE_DIRECTION COL2ROW
 
@@ -53,7 +47,16 @@
  * F4 PIN for pre-soldered WS2812 LEDs
  */
 #define RGB_DI_PIN F4
-#define RGBLIGHT_ANIMATIONS
+#define RGBLIGHT_EFFECT_BREATHING
+#define RGBLIGHT_EFFECT_RAINBOW_MOOD
+#define RGBLIGHT_EFFECT_RAINBOW_SWIRL
+#define RGBLIGHT_EFFECT_SNAKE
+#define RGBLIGHT_EFFECT_KNIGHT
+#define RGBLIGHT_EFFECT_CHRISTMAS
+#define RGBLIGHT_EFFECT_STATIC_GRADIENT
+#define RGBLIGHT_EFFECT_RGB_TEST
+#define RGBLIGHT_EFFECT_ALTERNATING
+#define RGBLIGHT_EFFECT_TWINKLE
 #define RGBLED_NUM 20
 #define RGBLIGHT_HUE_STEP 10
 #define RGBLIGHT_SAT_STEP 15
@@ -63,4 +66,3 @@
 #define LOCKING_SUPPORT_ENABLE
 /* Locking resynchronize hack */
 #define LOCKING_RESYNC_ENABLE
-

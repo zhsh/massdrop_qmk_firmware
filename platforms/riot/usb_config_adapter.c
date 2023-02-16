@@ -1,4 +1,4 @@
-// Copyright 2022 zvecr<git@zvecr.com>
+// Copyright 2023 QMK
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "util.h"
@@ -8,8 +8,8 @@
 #    define USB_MAX_POWER_CONSUMPTION 500
 #endif
 
-const char* qmk_get_usb_manuf(void) { return STR(MANUFACTURER); }
-const char* qmk_get_usb_product(void) { return STR(PRODUCT); }
+const char* qmk_get_usb_manuf(void) { return MANUFACTURER; }
+const char* qmk_get_usb_product(void) { return PRODUCT; }
 uint16_t    qmk_get_usb_vid(void) { return VENDOR_ID; }
 uint16_t    qmk_get_usb_pid(void) { return PRODUCT_ID; }
 uint16_t    qmk_get_usb_bcd(void) { return DEVICE_VER; }

@@ -15,7 +15,6 @@
  */
 #pragma once
 
-#include "config_common.h"
 
 /* key matrix size */
 #define MATRIX_ROWS 5
@@ -35,7 +34,6 @@
 
 #    define RGB_DI_PIN B4
 #    define RGBLED_NUM 1
-#    define DRIVER_LED_TOTAL RGBLED_NUM
 #    define RGBLIGHT_EFFECT_BREATHING
 #    define RGBLIGHT_EFFECT_RAINBOW_MOOD
 #    define RGBLIGHT_EFFECT_RAINBOW_SWIRL

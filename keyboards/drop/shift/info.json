@@ -1,14 +1,14 @@
 {
-    "keyboard_name": "Shift",
+    "keyboard_name": "SHIFT",
     "url": "https://drop.com/buy/drop-shift-mechanical-keyboard",
-    "manufacturer": "Drop",
+    "manufacturer": "Drop Inc.",
     "maintainer": "zvecr",
     "processor": "SAMD51",
     "bootloader": "md-boot",
     "board": "drop_m4",
     "matrix_pins": {
-        "custom": true,
-        "custom_lite": true
+        "cols": [ null, null, null, null, null, null, null, null, null, null, null, null, null ],
+        "rows": [ "A0", "A1", "A2", "A3", "A4", "A5", "A6", "A7"]
     },
     "usb": {
         "vid": "0x04D8",
@@ -16,6 +16,7 @@
         "device_version": "1.0.0"
     },
     "features": {
+        "rgb_matrix": true,
         "bootmagic": true,
         "command": false,
         "console": false,

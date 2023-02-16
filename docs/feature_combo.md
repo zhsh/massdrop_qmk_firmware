@@ -55,7 +55,7 @@ const uint16_t PROGMEM sd_combo[] = {KC_S, KC_D, COMBO_END};
 combo_t key_combos[COMBO_COUNT] = {
   [AB_ESC] = COMBO(ab_combo, KC_ESC),
   [JK_TAB] = COMBO(jk_combo, KC_TAB),
-  [QW_SFT] = COMBO(qw_combo, KC_LSFT)
+  [QW_SFT] = COMBO(qw_combo, KC_LSFT),
   [SD_LAYER] = COMBO(sd_combo, MO(_LAYER)),
 };
 ```
@@ -105,11 +105,11 @@ It is worth noting that `COMBO_ACTION`s are not needed anymore. As of [PR#8591](
 ## Keycodes
 You can enable, disable and toggle the Combo feature on the fly. This is useful if you need to disable them temporarily, such as for a game. The following keycodes are available for use in your `keymap.c`
 
-|Keycode   |Description                      |
-|----------|---------------------------------|
-|`CMB_ON`  |Turns on Combo feature           |
-|`CMB_OFF` |Turns off Combo feature          |
-|`CMB_TOG` |Toggles Combo feature on and off |
+|Keycode          |Aliases  |Description                     |
+|-----------------|---------|--------------------------------|
+|`QK_COMBO_ON`    |`CM_ON`  |Turns on Combo feature          |
+|`QK_COMBO_OFF`   |`CM_OFF` |Turns off Combo feature         |
+|`QK_COMBO_TOGGLE`|`CM_TOGG`|Toggles Combo feature on and off|
 
 # Advanced Configuration
 These configuration settings can be set in your `config.h` file.

@@ -16,7 +16,6 @@
 
 #pragma once
 
-#include "config_common.h"
 
 #define WAIT_US_TIMER           GPTD3
 
@@ -129,8 +128,5 @@
 #    define ENABLE_RGB_MATRIX_MULTISPLASH
 #    define ENABLE_RGB_MATRIX_SOLID_SPLASH
 #    define ENABLE_RGB_MATRIX_SOLID_MULTISPLASH
-
-// This allows VIA to control RGB Matrix settings in the 'Lighting' section.
-#define VIA_QMK_RGBLIGHT_ENABLE
 
 #endif /* RGB_MATRIX_ENABLE */

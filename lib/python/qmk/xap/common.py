@@ -1,5 +1,6 @@
 """This script handles the XAP protocol data files.
 """
+import re
 import os
 import hjson
 import jsonschema
@@ -7,25 +8,70 @@ from pathlib import Path
 from typing import OrderedDict
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from qmk.casing import to_snake
-from qmk.constants import QMK_FIRMWARE
-from qmk.json_schema import json_load, validate
+import qmk.constants
+from qmk.git import git_get_version
+from qmk.json_schema import json_load, validate, merge_ordered_dicts
+from qmk.makefile import parse_rules_mk_file
 from qmk.decorators import lru_cache
 from qmk.keymap import locate_keymap
 from qmk.path import keyboard
+from qmk.xap.jinja2_filters import attach_filters
 
+USERSPACE_DIR = Path('users')
 XAP_SPEC = 'xap.hjson'
 
 
+def list_lighting_versions(feature):
+    """Return available versions - sorted newest first
+    """
+    ret = []
+    for file in Path('data/constants/').glob(f'{feature}_[0-9].[0-9].[0-9].json'):
+        ret.append(file.stem.split('_')[-1])
+
+    ret.sort(reverse=True)
+    return ret
+
+
+def load_lighting_spec(feature, version='latest'):
+    """Build lighting data from the requested spec file
+    """
+    if version == 'latest':
+        version = list_lighting_versions(feature)[0]
+
+    spec = json_load(Path(f'data/constants/{feature}_{version}.json'))
+
+    # preprocess for gross rgblight "mode + n"
+    for obj in spec.get('effects', {}).values():
+        define = obj['key']
+        offset = 0
+        found = re.match('(.*)_(\\d+)$', define)
+        if found:
+            define = found.group(1)
+            offset = int(found.group(2)) - 1
+        obj['define'] = define
+        obj['offset'] = offset
+
+    return spec
+
+
 def _get_jinja2_env(data_templates_xap_subdir: str):
-    templates_dir = os.path.join(QMK_FIRMWARE, 'data', 'templates', 'xap', data_templates_xap_subdir)
-    j2 = Environment(loader=FileSystemLoader(templates_dir), autoescape=select_autoescape())
+    templates_dir = os.path.join(qmk.constants.QMK_FIRMWARE, 'data', 'templates', 'xap', data_templates_xap_subdir)
+    j2 = Environment(loader=FileSystemLoader(templates_dir), autoescape=select_autoescape(), lstrip_blocks=True, trim_blocks=True)
     return j2
 
 
-def render_xap_output(data_templates_xap_subdir, file_to_render, defs):
+def render_xap_output(data_templates_xap_subdir, file_to_render, defs=None, **kwargs):
+    if defs is None:
+        defs = latest_xap_defs()
     j2 = _get_jinja2_env(data_templates_xap_subdir)
-    return j2.get_template(file_to_render).render(xap=defs, xap_str=hjson.dumps(defs), to_snake=to_snake)
+
+    attach_filters(j2)
+
+    specs = {}
+    for feature in ['rgblight', 'rgb_matrix', 'led_matrix']:
+        specs[feature] = load_lighting_spec(feature)
+
+    return j2.get_template(file_to_render).render(xap=defs, qmk_version=git_get_version(), xap_str=hjson.dumps(defs), specs=specs, constants=qmk.constants, **kwargs)
 
 
 def _find_kb_spec(kb):
@@ -47,46 +93,25 @@ def _find_kb_spec(kb):
 
 
 def _find_km_spec(kb, km):
-    return locate_keymap(kb, km).parent / XAP_SPEC
+    keymap_dir = locate_keymap(kb, km).parent
+    if not keymap_dir.exists():
+        return None
 
+    # Resolve any potential USER_NAME overrides - default back to keymap name
+    keymap_rules_mk = parse_rules_mk_file(keymap_dir / 'rules.mk')
+    username = keymap_rules_mk.get('USER_NAME', km)
 
-def _merge_ordered_dicts(dicts):
-    """Merges nested OrderedDict objects resulting from reading a hjson file.
+    keymap_spec = keymap_dir / XAP_SPEC
+    userspace_spec = USERSPACE_DIR / username / XAP_SPEC
 
-    Later input dicts overrides earlier dicts for plain values.
-    Arrays will be appended. If the first entry of an array is "!reset!", the contents of the array will be cleared and replaced with RHS.
-    Dictionaries will be recursively merged. If any entry is "!reset!", the contents of the dictionary will be cleared and replaced with RHS.
-    """
-
-    result = OrderedDict()
-
-    def add_entry(target, k, v):
-        if k in target and isinstance(v, (OrderedDict, dict)):
-            if "!reset!" in v:
-                target[k] = v
-            else:
-                target[k] = _merge_ordered_dicts([target[k], v])
-            if "!reset!" in target[k]:
-                del target[k]["!reset!"]
-        elif k in target and isinstance(v, list):
-            if v[0] == '!reset!':
-                target[k] = v[1:]
-            else:
-                target[k] = target[k] + v
-        else:
-            target[k] = v
-
-    for d in dicts:
-        for (k, v) in d.items():
-            add_entry(result, k, v)
-
-    return result
+    # In the case of both userspace and keymap - keymap wins
+    return keymap_spec if keymap_spec.exists() else userspace_spec
 
 
 def get_xap_definition_files():
     """Get the sorted list of XAP definition files, from <QMK>/data/xap.
     """
-    xap_defs = QMK_FIRMWARE / "data" / "xap"
+    xap_defs = qmk.constants.QMK_FIRMWARE / "data" / "xap"
     return list(sorted(xap_defs.glob('**/xap_*.hjson')))
 
 
@@ -100,7 +125,7 @@ def update_xap_definitions(original, new):
     """
     if original is None:
         original = OrderedDict()
-    return _merge_ordered_dicts([original, new])
+    return merge_ordered_dicts([original, new])
 
 
 @lru_cache(timeout=5)
@@ -115,7 +140,7 @@ def get_xap_defs(version):
         files = files[:(index + 1)]
 
     definitions = [hjson.load(file.open(encoding='utf-8')) for file in files]
-    return _merge_ordered_dicts(definitions)
+    return merge_ordered_dicts(definitions)
 
 
 def latest_xap_defs():
@@ -137,7 +162,7 @@ def merge_xap_defs(kb, km):
     if km_xap.exists():
         definitions.append({'routes': {'0x03': hjson.load(km_xap.open(encoding='utf-8'))}})
 
-    defs = _merge_ordered_dicts(definitions)
+    defs = merge_ordered_dicts(definitions)
 
     try:
         validate(defs, 'qmk.xap.v1')
@@ -147,20 +172,6 @@ def merge_xap_defs(kb, km):
         exit(1)
 
     return defs
-
-
-@lru_cache(timeout=5)
-def get_xap_keycodes(xap_version):
-    """Gets keycode data for the required version of the XAP definitions.
-    """
-    defs = get_xap_defs(xap_version)
-
-    # Load DD keycodes for the dependency
-    keycode_version = defs['uses']['keycodes']
-    spec = json_load(Path(f'data/constants/keycodes_{keycode_version}.json'))
-
-    # Transform into something more usable - { raw_value : first alias || keycode }
-    return {int(k, 16): v.get('aliases', [v.get('key')])[0] for k, v in spec['keycodes'].items()}
 
 
 def route_conditions(route_stack):

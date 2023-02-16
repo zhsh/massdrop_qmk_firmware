@@ -21,7 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#include "config_common.h"
 
 /* key matrix size */
 // Rows are doubled-up
@@ -42,9 +41,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /* define if matrix has ghost */
 //#define MATRIX_HAS_GHOST
 
-/* number of backlight levels */
-// #define BACKLIGHT_LEVELS 3
-
 /* Set 0 if debouncing isn't needed */
 #define DEBOUNCE 5
 
@@ -55,7 +51,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* key combination for command */
 #define IS_COMMAND() ( \
-    get_mods() == (MOD_BIT(KC_LSHIFT) | MOD_BIT(KC_LGUI)) \
+    get_mods() == (MOD_BIT(KC_LSFT) | MOD_BIT(KC_LGUI)) \
 )
 
 /* ws2812 RGB LED */

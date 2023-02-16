@@ -81,29 +81,29 @@ __attribute__((weak)) RGB rgb_matrix_hsv_to_rgb(HSV hsv) {
 #    define RGB_MATRIX_SPD_STEP 16
 #endif
 
-#if !defined(RGB_MATRIX_STARTUP_MODE)
+#if !defined(RGB_MATRIX_DEFAULT_MODE)
 #    ifdef ENABLE_RGB_MATRIX_CYCLE_LEFT_RIGHT
-#        define RGB_MATRIX_STARTUP_MODE RGB_MATRIX_CYCLE_LEFT_RIGHT
+#        define RGB_MATRIX_DEFAULT_MODE RGB_MATRIX_CYCLE_LEFT_RIGHT
 #    else
 // fallback to solid colors if RGB_MATRIX_CYCLE_LEFT_RIGHT is disabled in userspace
-#        define RGB_MATRIX_STARTUP_MODE RGB_MATRIX_SOLID_COLOR
+#        define RGB_MATRIX_DEFAULT_MODE RGB_MATRIX_SOLID_COLOR
 #    endif
 #endif
 
-#if !defined(RGB_MATRIX_STARTUP_HUE)
-#    define RGB_MATRIX_STARTUP_HUE 0
+#if !defined(RGB_MATRIX_DEFAULT_HUE)
+#    define RGB_MATRIX_DEFAULT_HUE 0
 #endif
 
-#if !defined(RGB_MATRIX_STARTUP_SAT)
-#    define RGB_MATRIX_STARTUP_SAT UINT8_MAX
+#if !defined(RGB_MATRIX_DEFAULT_SAT)
+#    define RGB_MATRIX_DEFAULT_SAT UINT8_MAX
 #endif
 
-#if !defined(RGB_MATRIX_STARTUP_VAL)
-#    define RGB_MATRIX_STARTUP_VAL RGB_MATRIX_MAXIMUM_BRIGHTNESS
+#if !defined(RGB_MATRIX_DEFAULT_VAL)
+#    define RGB_MATRIX_DEFAULT_VAL RGB_MATRIX_MAXIMUM_BRIGHTNESS
 #endif
 
-#if !defined(RGB_MATRIX_STARTUP_SPD)
-#    define RGB_MATRIX_STARTUP_SPD UINT8_MAX / 2
+#if !defined(RGB_MATRIX_DEFAULT_SPD)
+#    define RGB_MATRIX_DEFAULT_SPD UINT8_MAX / 2
 #endif
 
 // globals
@@ -146,9 +146,9 @@ void eeconfig_update_rgb_matrix(void) {
 void eeconfig_update_rgb_matrix_default(void) {
     dprintf("eeconfig_update_rgb_matrix_default\n");
     rgb_matrix_config.enable = 1;
-    rgb_matrix_config.mode   = RGB_MATRIX_STARTUP_MODE;
-    rgb_matrix_config.hsv    = (HSV){RGB_MATRIX_STARTUP_HUE, RGB_MATRIX_STARTUP_SAT, RGB_MATRIX_STARTUP_VAL};
-    rgb_matrix_config.speed  = RGB_MATRIX_STARTUP_SPD;
+    rgb_matrix_config.mode   = RGB_MATRIX_DEFAULT_MODE;
+    rgb_matrix_config.hsv    = (HSV){RGB_MATRIX_DEFAULT_HUE, RGB_MATRIX_DEFAULT_SAT, RGB_MATRIX_DEFAULT_VAL};
+    rgb_matrix_config.speed  = RGB_MATRIX_DEFAULT_SPD;
     rgb_matrix_config.flags  = LED_FLAG_ALL;
     eeconfig_flush_rgb_matrix(true);
 }
@@ -409,7 +409,12 @@ static void rgb_task_flush(uint8_t effect) {
     rgb_task_state = SYNCING;
 }
 
+__attribute__((weak)) void rgb_matrix_pre_task(void) {}
+__attribute__((weak)) void rgb_matrix_post_task(void) {}
+
 void rgb_matrix_task(void) {
+    rgb_matrix_pre_task();
+
     rgb_task_timers();
 
     // Ideally we would also stop sending zeros to the LED driver PWM buffers
@@ -440,6 +445,8 @@ void rgb_matrix_task(void) {
             rgb_task_sync();
             break;
     }
+
+    rgb_matrix_post_task();
 }
 
 void rgb_matrix_indicators(void) {
@@ -749,4 +756,8 @@ void rgb_matrix_set_flags(led_flags_t flags) {
 
 void rgb_matrix_set_flags_noeeprom(led_flags_t flags) {
     rgb_matrix_set_flags_eeprom_helper(flags, false);
+}
+
+void rgb_matrix_reset_task_state(void) {
+    rgb_task_state = STARTING;
 }

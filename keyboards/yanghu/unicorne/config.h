@@ -16,7 +16,6 @@
 
 #pragma once
 
-#include "config_common.h"
 
 /* key matrix size */
 #define MATRIX_ROWS 4
@@ -46,7 +45,6 @@
 #define AUDIO_PWM_PAL_MODE 1
 #define AUDIO_PWM_DRIVER PWMD1
 #define AUDIO_PWM_CHANNEL 1
-#define AUDIO_STATE_TIMER GPTD4
 
 /* RGB LED */
 #define RGB_DI_PIN B1

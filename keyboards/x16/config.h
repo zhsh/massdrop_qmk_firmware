@@ -16,7 +16,6 @@
 
 #pragma once
 
-#include "config_common.h"
 
 /* key matrix size */
 #define MATRIX_ROWS 4
@@ -44,12 +43,10 @@
 //#define SOFT_SERIAL_PIN D0 // or D1, D2, D3, E6
 
 #define BACKLIGHT_PIN B5
-// #define BACKLIGHT_BREATHING
 #define BACKLIGHT_LEVELS 5
 
 // #define RGB_DI_PIN E2
 // #define RGBLED_NUM 4
-// #define RGBLIGHT_ANIMATIONS
 // #ifdef RGB_DI_PIN
 //   #define RGBLED_NUM 16
 //   #define RGBLIGHT_HUE_STEP 8
@@ -57,9 +54,6 @@
 //   #define RGBLIGHT_VAL_STEP 8
 //   #define RGBLIGHT_LIMIT_VAL 255 /* The maximum brightness level */
 //   #define RGBLIGHT_SLEEP  /* If defined, the RGB lighting will be switched off when the host goes to sleep */
-// /*== all animations enable ==*/
-//   #define RGBLIGHT_ANIMATIONS
-// /*== or choose animations ==*/
 //   #define RGBLIGHT_EFFECT_BREATHING
 //   #define RGBLIGHT_EFFECT_RAINBOW_MOOD
 //   #define RGBLIGHT_EFFECT_RAINBOW_SWIRL
@@ -77,8 +71,6 @@
 /* define if matrix has ghost (lacks anti-ghosting diodes) */
 //#define MATRIX_HAS_GHOST
 
-/* number of backlight levels */
-
 /* Mechanical locking support. Use KC_LCAP, KC_LNUM or KC_LSCR instead in keymap */
 #define LOCKING_SUPPORT_ENABLE
 /* Locking resynchronize hack */
@@ -88,27 +80,6 @@
  * This is userful for the Windows task manager shortcut (ctrl+shift+esc).
  */
 // #define GRAVE_ESC_CTRL_OVERRIDE
-
-/*
- * Force NKRO
- *
- * Force NKRO (nKey Rollover) to be enabled by default, regardless of the saved
- * state in the bootmagic EEPROM settings. (Note that NKRO must be enabled in the
- * makefile for this to work.)
- *
- * If forced on, NKRO can be disabled via magic key (default = LShift+RShift+N)
- * until the next keyboard reset.
- *
- * NKRO may prevent your keystrokes from being detected in the BIOS, but it is
- * fully operational during normal computer usage.
- *
- * For a less heavy-handed approach, enable NKRO via magic key (LShift+RShift+N)
- * or via bootmagic (hold SPACE+N while plugging in the keyboard). Once set by
- * bootmagic, NKRO mode will always be enabled until it is toggled again during a
- * power-up.
- *
- */
-//#define FORCE_NKRO
 
 /*
  * Feature disable options

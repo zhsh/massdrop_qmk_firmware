@@ -16,7 +16,6 @@
 
 #pragma once
 
-#include "config_common.h"
 
 #define MATRIX_ROWS 5
 #define MATRIX_COLS 12
@@ -29,5 +28,3 @@
 #define MOUSEKEY_INTERVAL 32
 
 #define TAPPING_TERM 175
-
-#define OLED_DISPLAY_128X64

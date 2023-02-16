@@ -14,7 +14,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#include "config_common.h"
 
 /* key matrix size */
 #define MATRIX_ROWS 11
@@ -50,7 +49,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define RGB_DI_PIN E2
 #ifdef RGB_DI_PIN
-    // RGBLIGHT_ANIMATIONS
     #define RGBLIGHT_EFFECT_ALTERNATING
     #define RGBLIGHT_EFFECT_BREATHING
     #define RGBLIGHT_EFFECT_CHRISTMAS

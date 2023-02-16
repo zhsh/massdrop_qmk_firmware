@@ -13,11 +13,10 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/  
+*/
 
 #pragma once
 
-#include "config_common.h"
 
 /* key matrix size */
 #define MATRIX_ROWS 5
@@ -33,12 +32,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *                  ROW2COL = ROW = Anode (+), COL = Cathode (-, marked on diode)
  *
  */
-/* rev0 */ 
+/* rev0 */
 /*
 #define MATRIX_ROW_PINS { B1, B2, F6, F5, F4 }
 #define MATRIX_COL_PINS { F1, D5, D3, D2, D1, D0, F7, C7, C6, B6, B5, B4, D7, D6, D4 }
 */
-/* rev1 */ 
+/* rev1 */
 #define MATRIX_ROW_PINS { B1, B2, F1, F6, F5 }
 #define MATRIX_COL_PINS { F4, D5, D3, D2, D1, D0, F7, C7, C6, B6, B5, B4, D7, D6, D4 }
 
@@ -63,27 +62,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#define GRAVE_ESC_CTRL_OVERRIDE
 
 /*
- * Force NKRO
- *
- * Force NKRO (nKey Rollover) to be enabled by default, regardless of the saved
- * state in the bootmagic EEPROM settings. (Note that NKRO must be enabled in the
- * makefile for this to work.)
- *
- * If forced on, NKRO can be disabled via magic key (default = LShift+RShift+N)
- * until the next keyboard reset.
- *
- * NKRO may prevent your keystrokes from being detected in the BIOS, but it is
- * fully operational during normal computer usage.
- *
- * For a less heavy-handed approach, enable NKRO via magic key (LShift+RShift+N)
- * or via bootmagic (hold SPACE+N while plugging in the keyboard). Once set by
- * bootmagic, NKRO mode will always be enabled until it is toggled again during a
- * power-up.
- *
- */
-//#define FORCE_NKRO
-
-/*
  * Feature disable options
  *  These options are also useful to firmware size reduction.
  */
@@ -103,9 +81,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#define BOOTMAGIC_LITE_ROW 0
 //#define BOOTMAGIC_LITE_COLUMN 0
 
-/* RGB Backlighting */ 
+/* RGB Backlighting */
 #define RGB_DI_PIN B0
 #define RGBLED_NUM 68
-#define RGBLIGHT_ANIMATIONS
+#define RGBLIGHT_EFFECT_BREATHING
+#define RGBLIGHT_EFFECT_RAINBOW_MOOD
+#define RGBLIGHT_EFFECT_RAINBOW_SWIRL
+#define RGBLIGHT_EFFECT_SNAKE
+#define RGBLIGHT_EFFECT_KNIGHT
+#define RGBLIGHT_EFFECT_CHRISTMAS
+#define RGBLIGHT_EFFECT_STATIC_GRADIENT
+#define RGBLIGHT_EFFECT_RGB_TEST
+#define RGBLIGHT_EFFECT_ALTERNATING
+#define RGBLIGHT_EFFECT_TWINKLE
 #define RGBLIGHT_LIMIT_VAL 125
 #define RGBLIGHT_SLEEP

@@ -266,13 +266,16 @@ BEGIN = gccversion sizebefore
 	$(eval CMD=MAKE=$(MAKE) $(CC) $(ALL_CFLAGS) $(filter-out %.txt,$^) --output $@ $(LDFLAGS))
 	@$(BUILD_CMD)
 
+# dependency here is so platform.mk can depend on the resolved value of $(OBJ)
+$(MASTER_OUTPUT)/qmk.o: $(OBJ) $(MASTER_OUTPUT)/cflags.txt $(MASTER_OUTPUT)/ldflags.txt $(MASTER_OUTPUT)/obj.txt | $(BEGIN)
+	$(LD) -r $(OBJ) -o $(MASTER_OUTPUT)/qmk.o
 
 define GEN_OBJRULE
 $1_INCFLAGS := $$(patsubst %,-I%,$$($1_INC))
 ifdef $1_CONFIG
 $1_CONFIG_FLAGS += $$(patsubst %,-include %,$$($1_CONFIG))
 endif
-$1_CFLAGS = $$(ALL_CFLAGS) $$($1_DEFS) $$($1_INCFLAGS) $$($1_CONFIG_FLAGS) $$(RIOT_BODGE_CFLAGS) $$(NOLTO_CFLAGS)
+$1_CFLAGS = $$(ALL_CFLAGS) $$($1_DEFS) $$($1_INCFLAGS) $$($1_CONFIG_FLAGS) $$(NOLTO_CFLAGS)
 $1_CXXFLAGS = $$(ALL_CXXFLAGS) $$($1_DEFS) $$($1_INCFLAGS) $$($1_CONFIG_FLAGS) $$(NOLTO_CFLAGS)
 $1_ASFLAGS = $$(ALL_ASFLAGS) $$($1_DEFS) $$($1_INCFLAGS) $$($1_CONFIG_FLAGS)
 
@@ -332,6 +335,7 @@ $1/asflags.txt: $1/force
 	echo '$$($1_ASFLAGS)' | cmp -s - $$@ || echo '$$($1_ASFLAGS)' > $$@
 
 $1/compiler.txt: $1/force
+	test -f $$@ || touch $$@
 	$$(CC) --version | cmp -s - $$@ || $$(CC) --version > $$@
 endef
 

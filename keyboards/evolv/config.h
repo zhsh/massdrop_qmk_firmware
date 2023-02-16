@@ -25,14 +25,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define MATRIX_ROW_PINS { B10, B11, A7, B0, B1, B2}
 #define DIODE_DIRECTION COL2ROW
 
-//#define BACKLIGHT_PIN           A6
-//#define BACKLIGHT_PWM_DRIVER    PWMD3
-//#define BACKLIGHT_PWM_CHANNEL   1
-//#define BACKLIGHT_PAL_MODE      1
-//#define BACKLIGHT_LEVELS 6
-//#define BACKLIGHT_BREATHING
-//#define BREATHING_PERIOD 6
-
 /* define if matrix has ghost */
 //#define MATRIX_HAS_GHOST
 
@@ -48,7 +40,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define RGBLED_NUM 16
 #define RGBLIGHT_LIMIT_VAL 200
 #define RGBLIGHT_SLEEP
-#define RGBLIGHT_ANIMATIONS
+#define RGBLIGHT_EFFECT_BREATHING
+#define RGBLIGHT_EFFECT_RAINBOW_MOOD
+#define RGBLIGHT_EFFECT_RAINBOW_SWIRL
+#define RGBLIGHT_EFFECT_SNAKE
+#define RGBLIGHT_EFFECT_KNIGHT
+#define RGBLIGHT_EFFECT_CHRISTMAS
+#define RGBLIGHT_EFFECT_STATIC_GRADIENT
+#define RGBLIGHT_EFFECT_RGB_TEST
+#define RGBLIGHT_EFFECT_ALTERNATING
+#define RGBLIGHT_EFFECT_TWINKLE
 
 #define ENCODERS_PAD_A { B3 }
 #define ENCODERS_PAD_B { A15 }

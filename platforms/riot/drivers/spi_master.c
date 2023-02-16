@@ -1,25 +1,12 @@
-/* Copyright 2021 QMK
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+// Copyright 2023 QMK
+// SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "periph/spi.h"
 #include "spi_master.h"
 #undef spi_init
 
 #ifndef SPI_BUS_ID
-#    define SPI_BUS_ID    (SPI_DEV(0))
+#    define SPI_BUS_ID (SPI_DEV(0))
 #endif
 
 static pin_t currentSlavePin = NO_PIN;
@@ -63,7 +50,7 @@ bool _spi_start(pin_t slavePin, bool lsbFirst, uint8_t mode, uint16_t divisor) {
     // TODO: divisor -> clock?
     spi_clk_t spi_clock = SPI_CLK_5MHZ;
 
-    currentSlavePin  = slavePin;
+    currentSlavePin = slavePin;
     setPinOutput(currentSlavePin);
     writePinLow(currentSlavePin);
 

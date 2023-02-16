@@ -1,18 +1,5 @@
-/* Copyright 2021 QMK
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+// Copyright 2023 QMK
+// SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "analog.h"
 #include "periph/adc.h"
@@ -32,11 +19,20 @@ static inline void manageAdcInitialization(uint8_t index) {
 }
 
 __attribute__((weak)) uint8_t pinToLine(pin_t pin) {
-    for (uint8_t i = 0; i < ADC_NUMOF; i++) {
-        if (gpio_is_equal(adc_channels[i].pin, pin)) {
-            return i;
+#ifdef QMK_MCU_FAMILY_SAM
+    for (uint8_t line = 0; line < ADC_NUMOF; line++) {
+#    ifdef ADC0
+        const uint8_t adc = adc_channels[line].dev == ADC1 ? 1 : 0;
+#    else
+        const uint8_t adc = 0;
+#    endif
+        uint8_t muxpos  = (adc_channels[line].inputctrl & ADC_INPUTCTRL_MUXPOS_Msk) >> ADC_INPUTCTRL_MUXPOS_Pos;
+        gpio_t  adc_pin = sam0_adc_pins[adc][muxpos];
+        if (gpio_is_equal(adc_pin, pin)) {
+            return line;
         }
     }
+#endif
     return UINT8_MAX;
 }
 

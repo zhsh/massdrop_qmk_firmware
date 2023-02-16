@@ -15,7 +15,6 @@
  */
 #pragma once
 
-#include "config_common.h"
 
 // key matrix size
 #define MATRIX_ROWS 5
@@ -50,7 +49,7 @@
 #define ISSI_DRIVER_TOTAL (DRIVER_1_LED_TOTAL + DRIVER_2_LED_TOTAL)
 #define RGB_MATRIX_LED_COUNT (DRIVER_1_LED_TOTAL + DRIVER_2_LED_TOTAL + WS2812_LED_TOTAL)
 
-#define RGB_MATRIX_STARTUP_VAL 80
+#define RGB_MATRIX_DEFAULT_VAL 80
 #define RGB_MATRIX_KEYPRESSES
 
 // enable/disable LEDs based on layout

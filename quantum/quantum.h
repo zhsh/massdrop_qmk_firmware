@@ -42,7 +42,6 @@
 #include "bootmagic.h"
 #include "timer.h"
 #include "sync_timer.h"
-#include "config_common.h"
 #include "gpio.h"
 #include "atomic_util.h"
 #include "led.h"
@@ -75,6 +74,7 @@ extern layer_state_t layer_state;
 #ifdef AUDIO_ENABLE
 #    include "audio.h"
 #    include "process_audio.h"
+#    include "song_list.h"
 #    ifdef AUDIO_CLICKY
 #        include "process_clicky.h"
 #    endif
@@ -119,10 +119,6 @@ extern layer_state_t layer_state;
 
 #ifdef TAP_DANCE_ENABLE
 #    include "process_tap_dance.h"
-#endif
-
-#ifdef PRINTING_ENABLE
-#    include "process_printer.h"
 #endif
 
 #ifdef AUTO_SHIFT_ENABLE
@@ -209,6 +205,10 @@ extern layer_state_t layer_state;
 
 #ifdef JOYSTICK_ENABLE
 #    include "joystick.h"
+#endif
+
+#ifdef DIGITIZER_ENABLE
+#    include "digitizer.h"
 #endif
 
 #ifdef XAP_ENABLE

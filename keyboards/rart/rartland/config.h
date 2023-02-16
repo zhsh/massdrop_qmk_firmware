@@ -16,7 +16,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#include "config_common.h"
 
 /* key matrix size */
 #define MATRIX_ROWS 5
@@ -58,7 +57,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* #define RGB_DI_PIN D7 */
 /* #ifdef RGB_DI_PIN */
-/* #define RGBLIGHT_ANIMATIONS */
 /* #define RGBLED_NUM 11 */
 /* #define RGBLIGHT_HUE_STEP 8 */
 /* #define RGBLIGHT_SAT_STEP 8 */
@@ -66,4 +64,3 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /* #define RGBLIGHT_LIMIT_VAL 240 */
 /* #define RGBLIGHT_SLEEP */
 /* #endif */
-

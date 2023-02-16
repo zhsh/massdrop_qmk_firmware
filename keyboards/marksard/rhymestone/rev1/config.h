@@ -17,7 +17,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#include "config_common.h"
 
 /* key matrix size */
 #define MATRIX_ROWS 8
@@ -44,10 +43,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #define SOFT_SERIAL_PIN D2  // or D1, D2, D3, E6
 
-// #define BACKLIGHT_PIN B7
-// #define BACKLIGHT_BREATHING
-// #define BACKLIGHT_LEVELS 3
-
 #define RGB_DI_PIN D3
 
 #ifdef RGBLIGHT_ENABLE
@@ -59,9 +54,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   #define RGBLIGHT_VAL_STEP 8
   #define RGBLIGHT_LIMIT_VAL 150 /* The maximum brightness level */
   #define RGBLIGHT_SLEEP  /* If defined, the RGB lighting will be switched off when the host goes to sleep */
-/*== all animations enable ==*/
-//   #define RGBLIGHT_ANIMATIONS
-/*== or choose animations ==*/
 //   #define RGBLIGHT_EFFECT_BREATHING
   #define RGBLIGHT_EFFECT_RAINBOW_MOOD
   #define RGBLIGHT_EFFECT_RAINBOW_SWIRL
@@ -136,7 +128,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //   #undef ENABLE_RGB_MATRIX_SOLID_SPLASH
 //   #undef ENABLE_RGB_MATRIX_SOLID_MULTISPLASH
 
-#    define RGB_MATRIX_STARTUP_MODE RGB_MATRIX_TYPING_HEATMAP
+#    define RGB_MATRIX_DEFAULT_MODE RGB_MATRIX_TYPING_HEATMAP
 #endif
 
 /* Debounce reduces chatter (unintended double-presses) - set 0 if debouncing is not needed */

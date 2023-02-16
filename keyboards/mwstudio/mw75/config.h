@@ -16,7 +16,6 @@
 
 #pragma once
 
-#include "config_common.h"
 
 /* key matrix size */
 #define MATRIX_ROWS 7
@@ -39,7 +38,7 @@
 #define RGBLIGHT_SLEEP
 
 #define RGB_MATRIX_MAXIMUM_BRIGHTNESS 200
-#define RGB_MATRIX_STARTUP_VAL RGB_MATRIX_MAXIMUM_BRIGHTNESS
+#define RGB_MATRIX_DEFAULT_VAL RGB_MATRIX_MAXIMUM_BRIGHTNESS
 #define RGB_MATRIX_LED_COUNT 97
 #define RGBLED_NUM 97
 #define RGB_MATRIX_KEYPRESSES

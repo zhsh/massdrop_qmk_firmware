@@ -20,10 +20,6 @@ enum usb_interfaces {
     RAW_INTERFACE,
 #endif
 
-#ifdef XAP_ENABLE
-    XAP_INTERFACE,
-#endif
-
 #if defined(MOUSE_ENABLE) && !defined(MOUSE_SHARED_EP)
     MOUSE_INTERFACE,
 #else
@@ -42,6 +38,10 @@ enum usb_interfaces {
     DIGITIZER_INTERFACE,
 #else
 #    define DIGITIZER_INTERFACE SHARED_INTERFACE
+#endif
+
+#ifdef XAP_ENABLE
+    XAP_INTERFACE,
 #endif
 
     TOTAL_INTERFACES
@@ -70,6 +70,12 @@ typedef struct comp_hid_device_conf {
 void usbdrv_init(comp_hid_device_conf_t *config, size_t len);
 void usbdrv_write(uint8_t index, const void *buffer, size_t len);
 
+size_t usbdrv_write_timeout(uint8_t id, const void *buffer, size_t len, uint32_t timeout);
+
 uint8_t usbdrv_keyboard_leds(void);
 
 void usbdrv_wake(void);
+
+static inline bool usbdrv_is_connected(void) {
+    return g_usbus.state != USBUS_STATE_CONFIGURED;
+}

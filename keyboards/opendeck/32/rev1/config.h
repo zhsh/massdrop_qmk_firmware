@@ -15,7 +15,6 @@
  */
 #pragma once
 
-#include "config_common.h"
 
 // Key matrix (TtB, LtR)
 #define MATRIX_ROWS 4
@@ -31,7 +30,7 @@
 #define DRIVER_COUNT 1
 #define RGB_MATRIX_LED_COUNT (4 * 8 * 3)
 #define RGB_DISABLE_WHEN_USB_SUSPENDED
-#define RGB_MATRIX_STARTUP_MODE RGB_MATRIX_CYCLE_SPIRAL
+#define RGB_MATRIX_DEFAULT_MODE RGB_MATRIX_CYCLE_SPIRAL
 #define RGB_MATRIX_DISABLE_KEYCODES
 // RGB Matrix Animation modes. Explicitly enabled
 // For full list of effects, see:

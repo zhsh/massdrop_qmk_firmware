@@ -181,32 +181,30 @@ static const uint8_t digitizer_hid_report[] = {
 #    ifdef DIGITIZER_SHARED_EP
     0x85, REPORT_ID_DIGITIZER, //   Report ID
 #    endif
-    0x09, 0x22, //   Usage (Finger)
+    0x09, 0x20, //   Usage (Stylus)
     0xA1, 0x00, //   Collection (Physical)
-    // Tip Switch (1 bit)
+    // In Range, Tip Switch & Barrel Switch (3 bits)
+    0x09, 0x32, //     Usage (In Range)
     0x09, 0x42, //     Usage (Tip Switch)
+    0x09, 0x44, //     Usage (Barrel Switch)
     0x15, 0x00, //     Logical Minimum
     0x25, 0x01, //     Logical Maximum
-    0x95, 0x01, //     Report Count (1)
-    0x75, 0x01, //     Report Size (16)
+    0x95, 0x03, //     Report Count (3)
+    0x75, 0x01, //     Report Size (1)
     0x81, 0x02, //     Input (Data, Variable, Absolute)
-    // In Range (1 bit)
-    0x09, 0x32, //     Usage (In Range)
-    0x81, 0x02, //     Input (Data, Variable, Absolute)
-    // Padding (6 bits)
-    0x95, 0x06, //     Report Count (6)
+    // Padding (5 bits)
+    0x95, 0x05, //     Report Count (5)
     0x81, 0x03, //     Input (Constant)
 
     // X/Y Position (4 bytes)
     0x05, 0x01,       //     Usage Page (Generic Desktop)
+    0x09, 0x30,       //     Usage (X)
+    0x09, 0x31,       //     Usage (Y)
     0x26, 0xFF, 0x7F, //     Logical Maximum (32767)
-    0x95, 0x01,       //     Report Count (1)
+    0x95, 0x02,       //     Report Count (2)
     0x75, 0x10,       //     Report Size (16)
     0x65, 0x33,       //     Unit (Inch, English Linear)
     0x55, 0x0E,       //     Unit Exponent (-2)
-    0x09, 0x30,       //     Usage (X)
-    0x81, 0x02,       //     Input (Data, Variable, Absolute)
-    0x09, 0x31,       //     Usage (Y)
     0x81, 0x02,       //     Input (Data, Variable, Absolute)
     0xC0,             //   End Collection
     0xC0,             // End Collection
@@ -333,29 +331,6 @@ static const uint8_t raw_hid_report[] = {
 };
 #endif
 
-#ifdef XAP_ENABLE
-static const uint8_t xap_hid_report[] = {
-    0x06, 0x51, 0xFF, // Usage Page (Vendor Defined)
-    0x09, 0x58,       // Usage (Vendor Defined)
-    0xA1, 0x01,       // Collection (Application)
-    // Data to host
-    0x09, 0x62,       //   Usage (Vendor Defined)
-    0x15, 0x00,       //   Logical Minimum (0)
-    0x26, 0xFF, 0x00, //   Logical Maximum (255)
-    0x95, XAP_EPSIZE, //   Report Count
-    0x75, 0x08,       //   Report Size (8)
-    0x81, 0x02,       //   Input (Data, Variable, Absolute)
-    // Data from host
-    0x09, 0x63,       //   Usage (Vendor Defined)
-    0x15, 0x00,       //   Logical Minimum (0)
-    0x26, 0xFF, 0x00, //   Logical Maximum (255)
-    0x95, XAP_EPSIZE, //   Report Count
-    0x75, 0x08,       //   Report Size (8)
-    0x91, 0x02,       //   Output (Data, Variable, Absolute)
-    0xC0              // End Collection
-};
-#endif
-
 #ifdef CONSOLE_ENABLE
 static const uint8_t console_hid_report[] = {
     0x06, 0x31, 0xFF, // Usage Page (Vendor Defined - PJRC Teensy compatible)
@@ -379,11 +354,35 @@ static const uint8_t console_hid_report[] = {
 };
 #endif
 
+#ifdef XAP_ENABLE
+static const uint8_t xap_hid_report[] = {
+    0x06, 0x51, 0xFF, // Usage Page (Vendor Defined)
+    0x09, 0x58,       // Usage (Vendor Defined)
+    0xA1, 0x01,       // Collection (Application)
+    // Data to host
+    0x09, 0x62,       //   Usage (Vendor Defined)
+    0x15, 0x00,       //   Logical Minimum (0)
+    0x26, 0xFF, 0x00, //   Logical Maximum (255)
+    0x95, XAP_EPSIZE, //   Report Count
+    0x75, 0x08,       //   Report Size (8)
+    0x81, 0x02,       //   Input (Data, Variable, Absolute)
+    // Data from host
+    0x09, 0x63,       //   Usage (Vendor Defined)
+    0x15, 0x00,       //   Logical Minimum (0)
+    0x26, 0xFF, 0x00, //   Logical Maximum (255)
+    0x95, XAP_EPSIZE, //   Report Count
+    0x75, 0x08,       //   Report Size (8)
+    0x91, 0x02,       //   Output (Data, Variable, Absolute)
+    0xC0              // End Collection
+};
+#endif
+
 /*------------------------------------------------------------------*
  * Host driver
  *------------------------------------------------------------------*/
 extern uint8_t           keyboard_protocol;
 extern report_keyboard_t keyboard_report_sent;
+extern report_mouse_t    mouse_report_sent;
 
 static uint8_t keyboard_leds(void);
 static void    send_keyboard(report_keyboard_t *report);
@@ -392,70 +391,84 @@ static void    send_extra(report_extra_t *report);
 
 static host_driver_t driver = {keyboard_leds, send_keyboard, send_mouse, send_extra};
 
+/* ---------------------------------------------------------
+ *                  Keyboard functions
+ * ---------------------------------------------------------
+ */
+
+/* LED status */
 static uint8_t keyboard_leds(void) {
     return usbdrv_keyboard_leds();
 }
 
-static void send_keyboard(report_keyboard_t *report) {
-    /* Select the Keyboard Report Endpoint */
-    uint8_t ep   = KEYBOARD_INTERFACE;
-    uint8_t size = KEYBOARD_REPORT_SIZE;
-#ifdef NKRO_ENABLE
-    if (keyboard_protocol && keymap_config.nkro) {
-        ep   = SHARED_INTERFACE;
-        size = sizeof(struct nkro_report);
-    }
-#endif
-
+void send_report(uint8_t endpoint, void *report, size_t size) {
     if (g_usbus.state != USBUS_STATE_CONFIGURED) {
         return;
     }
+    usbdrv_write(endpoint, report, size);
+}
 
+/* prepare and start sending a report IN
+ * not callable from ISR or locked state */
+void send_keyboard(report_keyboard_t *report) {
+    uint8_t ep   = KEYBOARD_INTERFACE;
+    size_t  size = KEYBOARD_REPORT_SIZE;
+
+    /* If we're in Boot Protocol, don't send any report ID or other funky fields */
     if (!keyboard_protocol) {
-        usbdrv_write(ep, &report->mods, 8);
+        send_report(ep, &report->mods, 8);
     } else {
-        usbdrv_write(ep, report, size);
+#ifdef NKRO_ENABLE
+        if (keymap_config.nkro) {
+            ep   = SHARED_INTERFACE;
+            size = sizeof(struct nkro_report);
+        }
+#endif
+
+        send_report(ep, report, size);
     }
 
     keyboard_report_sent = *report;
 }
 
-static void send_mouse(report_mouse_t *report) {
+/* ---------------------------------------------------------
+ *                     Mouse functions
+ * ---------------------------------------------------------
+ */
+
+void send_mouse(report_mouse_t *report) {
 #ifdef MOUSE_ENABLE
-    if (g_usbus.state != USBUS_STATE_CONFIGURED) {
-        return;
-    }
-    usbdrv_write(MOUSE_INTERFACE, report, sizeof(report_mouse_t));
+    send_report(MOUSE_INTERFACE, report, sizeof(report_mouse_t));
+    mouse_report_sent = *report;
 #endif
 }
 
-#if defined(EXTRAKEY_ENABLE) || defined(PROGRAMMABLE_BUTTON_ENABLE)
-static void send_report(void *report, size_t size) {
-    if (g_usbus.state != USBUS_STATE_CONFIGURED) {
-        return;
-    }
-    usbdrv_write(SHARED_INTERFACE, report, sizeof(report_extra_t));
-}
-#endif
+/* ---------------------------------------------------------
+ *                   Extrakey functions
+ * ---------------------------------------------------------
+ */
 
-static void send_extra(report_extra_t *report) {
+void send_extra(report_extra_t *report) {
 #ifdef EXTRAKEY_ENABLE
-    send_report(report, sizeof(report_extra_t));
+    send_report(SHARED_INTERFACE, report, sizeof(report_extra_t));
 #endif
 }
 
 void send_programmable_button(report_programmable_button_t *report) {
 #ifdef PROGRAMMABLE_BUTTON_ENABLE
-    send_report(report, sizeof(report_programmable_button_t));
+    send_report(SHARED_INTERFACE, report, sizeof(report_programmable_button_t));
+#endif
+}
+
+void send_joystick(report_joystick_t *report) {
+#ifdef JOYSTICK_ENABLE
+    send_report(JOYSTICK_INTERFACE, report, sizeof(report_joystick_t));
 #endif
 }
 
 void send_digitizer(report_digitizer_t *report) {
 #ifdef DIGITIZER_ENABLE
-    if (g_usbus.state != USBUS_STATE_CONFIGURED) {
-        return;
-    }
-    usbdrv_write(DIGITIZER_INTERFACE, &report, sizeof(report_digitizer_t));
+    send_report(DIGITIZER_INTERFACE, report, sizeof(report_digitizer_t));
 #endif
 }
 
@@ -468,7 +481,7 @@ static uint8_t raw_output_buffer[RAW_EPSIZE];
 static uint8_t raw_output_received_bytes = 0;
 
 void raw_hid_dump(uint8_t *data, uint8_t length) {
-    if (raw_output_buffer + length > RAW_EPSIZE) {
+    if (raw_output_received_bytes + length > RAW_EPSIZE) {
         return;
     }
 
@@ -531,8 +544,11 @@ void xap_send_base(uint8_t *data, uint8_t length) {
         return;
     }
 
-    usbdrv_write(XAP_INTERFACE, data, length);
-    usbdrv_write(XAP_INTERFACE, 0, 0);
+    static bool timed_out = false;
+
+    const uint32_t timeout = timed_out ? 100 : 5000;
+    usbdrv_write_timeout(XAP_INTERFACE, data, length, timeout);
+    usbdrv_write_timeout(XAP_INTERFACE, 0, 0, timeout);
 }
 
 void xap_send(xap_token_t token, xap_response_flags_t response_flags, const void *data, size_t length) {
@@ -608,8 +624,12 @@ void console_task(void) {
         return;
     }
 
-    usbdrv_write(CONSOLE_INTERFACE, send_buf, sizeof(send_buf));
-    usbdrv_write(CONSOLE_INTERFACE, 0, 0);
+    static bool timed_out = false;
+
+    const uint32_t timeout = timed_out ? 100 : 5000;
+
+    timed_out = usbdrv_write_timeout(CONSOLE_INTERFACE, send_buf, sizeof(send_buf), timeout) == 0;
+    usbdrv_write_timeout(CONSOLE_INTERFACE, 0, 0, timeout);
 }
 #endif
 
@@ -655,17 +675,6 @@ void protocol_pre_init(void) {
             .interval         = 1
         },
 #endif
-#ifdef XAP_ENABLE
-        {
-            .id               = XAP_INTERFACE,
-            .subclass         = USB_HID_SUBCLASS_NONE,
-            .protocol         = USB_HID_PROTOCOL_NONE,
-            .report_desc      = xap_hid_report,
-            .report_desc_size = sizeof(xap_hid_report),
-            .ep_size          = XAP_EPSIZE,
-            .interval         = 1
-        },
-#endif
 #if defined(MOUSE_ENABLE) && !defined(MOUSE_SHARED_EP)
         {
             .id               = MOUSE_INTERFACE,
@@ -708,6 +717,17 @@ void protocol_pre_init(void) {
             .report_desc_size = sizeof(digitizer_hid_report),
             .ep_size          = DIGITIZER_EPSIZE,
             .interval         = USB_POLLING_INTERVAL_MS
+        },
+#endif
+#ifdef XAP_ENABLE
+        {
+            .id               = XAP_INTERFACE,
+            .subclass         = USB_HID_SUBCLASS_NONE,
+            .protocol         = USB_HID_PROTOCOL_NONE,
+            .report_desc      = xap_hid_report,
+            .report_desc_size = sizeof(xap_hid_report),
+            .ep_size          = XAP_EPSIZE,
+            .interval         = 1
         },
 #endif
     };

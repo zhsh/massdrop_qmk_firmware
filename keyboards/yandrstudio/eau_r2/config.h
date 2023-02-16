@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #pragma once
-#include "config_common.h"
 
 /* key matrix size */
 #define MATRIX_ROWS 6
@@ -33,7 +32,6 @@
 
 #    define RGB_DI_PIN A8
 #    define RGBLED_NUM 12
-#    define DRIVER_LED_TOTAL RGBLED_NUM
 #    define RGBLIGHT_SLEEP
 #    define RGBLIGHT_VAL_STEP 5
 #    define RGBLIGHT_LIMIT_VAL 200

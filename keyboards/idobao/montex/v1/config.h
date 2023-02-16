@@ -16,7 +16,6 @@
 
 #pragma once
 
-#include "config_common.h"
 
 /* key matrix size */
 #define MATRIX_ROWS 6
@@ -29,7 +28,6 @@
 /* COL2ROW or ROW2COL */
 #define DIODE_DIRECTION ROW2COL
 
-/* number of backlight levels */
 #define BACKLIGHT_PIN B6
 #ifdef BACKLIGHT_PIN
 #define BACKLIGHT_LEVELS 3
@@ -46,7 +44,6 @@
 
 #define RGB_DI_PIN B1
 #ifdef RGB_DI_PIN
-    // RGBLIGHT_ANIMATIONS
     #define RGBLIGHT_EFFECT_ALTERNATING
     #define RGBLIGHT_EFFECT_BREATHING
     #define RGBLIGHT_EFFECT_CHRISTMAS

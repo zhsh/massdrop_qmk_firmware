@@ -18,7 +18,6 @@
 
 #pragma once
 
-#include "config_common.h"
 
 #define WEBUSB_LANDING_PAGE_URL u8"configure.ergodox-ez.com"
 
@@ -76,7 +75,7 @@
 #define DRIVER_1_LED_TOTAL 36
 #define DRIVER_2_LED_TOTAL 36
 #define RGB_MATRIX_LED_COUNT (DRIVER_1_LED_TOTAL + DRIVER_2_LED_TOTAL)
-#define RGB_MATRIX_CENTER { 125, 26 }
+#define RGB_MATRIX_CENTER { 120, 36 }
 #define RGB_MATRIX_MAXIMUM_BRIGHTNESS 175
 #define RGB_MATRIX_FRAMEBUFFER_EFFECTS
 #define RGB_MATRIX_KEYPRESSES
