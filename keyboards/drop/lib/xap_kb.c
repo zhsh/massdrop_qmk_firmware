@@ -1,3 +1,6 @@
+// Copyright 2023 Massdrop, Inc.
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 #include "quantum.h"
 #include "eeprom.h"
 
@@ -5,8 +8,8 @@
 
 #define INVALID_EFFECT 0xFF
 
-uint8_t rgb_matrix2xap(uint8_t val);
-uint8_t xap2rgb_matrix(uint8_t val);
+uint8_t rgb_matrix_effect_to_id(uint8_t val);
+uint8_t rgb_matrix_id_to_effect(uint8_t val);
 
 rgb_config_t rgb_layers[DYNAMIC_KEYMAP_LAYER_COUNT] = {0};
 
@@ -22,20 +25,13 @@ void keyboard_post_init_kb(void) {
     keyboard_post_init_user();
 }
 
-bool xap_respond_kb_get_rgb_layer(xap_token_t token, const void *data, size_t length) {
-    if (length != sizeof(uint8_t)) {
-        return false;
-    }
-
-    uint8_t layer;
-    memcpy(&layer, data, sizeof(uint8_t));
-
+bool xap_execute_kb_get_rgb_layer(xap_token_t token, uint8_t layer) {
     xap_route_kb_get_rgb_layer_t ret = {0};
 
     rgb_config_t* conf = &rgb_layers[layer];
 
     ret.enable = conf->enable;
-    ret.mode   = rgb_matrix2xap(conf->mode);
+    ret.mode   = rgb_matrix_effect_to_id(conf->mode);
     ret.hue    = conf->hsv.h;
     ret.sat    = conf->hsv.s;
     ret.val    = conf->hsv.v;
@@ -43,14 +39,8 @@ bool xap_respond_kb_get_rgb_layer(xap_token_t token, const void *data, size_t le
     return xap_respond_data(token, &ret, sizeof(ret));
 }
 
-bool xap_respond_kb_set_rgb_layer(xap_token_t token, const void *data, size_t length) {
-    if (length != sizeof(xap_route_kb_set_rgb_layer_arg_t)) {
-        return false;
-    }
-
-    xap_route_kb_set_rgb_layer_arg_t *arg = (xap_route_kb_set_rgb_layer_arg_t *)data;
-
-    uint8_t mode = xap2rgb_matrix(arg->mode);
+bool xap_execute_kb_set_rgb_layer(xap_token_t token, xap_route_kb_set_rgb_layer_arg_t* arg) {
+    uint8_t mode = rgb_matrix_id_to_effect(arg->mode);
     if (mode == INVALID_EFFECT) {
         return false;
     }
@@ -61,15 +51,13 @@ bool xap_respond_kb_set_rgb_layer(xap_token_t token, const void *data, size_t le
     conf->mode = mode;
     conf->hsv = (HSV){arg->hue, arg->sat, arg->val};
 
-    xap_respond_success(token);
-    return true;
+    return xap_respond_success(token);
 }
 
-bool xap_respond_kb_save_rgb_layers(xap_token_t token, const void *data, size_t length) {
+bool xap_execute_kb_save_rgb_layers(xap_token_t token, const void *data, size_t length) {
     eeconfig_flush_rgb_layers(true);
 
-    xap_respond_success(token);
-    return true;
+    return xap_respond_success(token);
 }
 
 static uint8_t last_layer = 0;

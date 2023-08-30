@@ -47,33 +47,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 
 #if defined(ENCODER_MAP_ENABLE)
-const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
+const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
     [0] = { ENCODER_CCW_CW(KC_VOLD, KC_VOLU) },
     [1] = { ENCODER_CCW_CW(KC_MPRV, KC_MNXT) },
     [2] = { ENCODER_CCW_CW(_______, _______) }
 };
 #endif
-
-bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-    if (!record->event.pressed) {
-        switch (keycode) {
-            case RGB_TOG:
-                switch (rgb_matrix_get_flags()) {
-                    case LED_FLAG_ALL:
-                        rgb_matrix_set_flags(LED_FLAG_KEYLIGHT | LED_FLAG_MODIFIER | LED_FLAG_INDICATOR);
-                        break;
-                    case (LED_FLAG_KEYLIGHT | LED_FLAG_MODIFIER | LED_FLAG_INDICATOR):
-                        rgb_matrix_set_flags(LED_FLAG_UNDERGLOW);
-                        break;
-                    case LED_FLAG_UNDERGLOW:
-                        rgb_matrix_set_flags(LED_FLAG_NONE);
-                        break;
-                    default:
-                        rgb_matrix_set_flags(LED_FLAG_ALL);
-                        break;
-                }
-                return false;
-        }
-    }
-    return true;
-};
